@@ -21,6 +21,14 @@ import "github.com/nextunit-io/hotkey"
 and in your code you can register your hotkeys. This provides an example for the `main` function.
 
 ```Go
+package main
+
+import (
+	"fmt"
+
+	"github.com/nextunit-io/hotkey"
+)
+
 func main() {
 	defer hotkey.Close()
 
