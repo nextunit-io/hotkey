@@ -62,7 +62,7 @@ func (hotkey *WindowsHotkey) String() string {
 }
 
 // Register is a function to register a Windows Hotkey.
-func (hotkey *WindowsHotkey) Register(func(id int)) error {
+func (hotkey *WindowsHotkey) Register(fn func(id int)) error {
 	out := make(chan error)
 	go func() {
 		log.Debugf("[WindowsHotkey] - Register Windows Hotkey: %s", hotkey)
@@ -80,6 +80,7 @@ func (hotkey *WindowsHotkey) Register(func(id int)) error {
 			close(out)
 
 			hotkey.runBackgroundProcess = true
+			hotkey.callback = fn
 			log.Debugf("[WindowsHotkey] - Start background process.")
 
 			hotkey.windowsBackgroundProcess()
@@ -131,9 +132,11 @@ func (hotkey *WindowsHotkey) windowsBackgroundProcess() {
 
 		// Registered id is in the WPARAM field:
 		if id != 0 {
-			fmt.Println(id)
 			if _, ok := running[int(id)]; ok {
+				log.Debugf("Starting callback for hotkey ID %d", int(id))
 				running[int(id)].callback(int(id))
+			} else {
+				log.Debugf("Can find hotkey with ID %d", int(id))
 			}
 		}
 
